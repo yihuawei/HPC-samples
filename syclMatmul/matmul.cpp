@@ -21,10 +21,6 @@ int main(int argc,  char** argv){
     std::generate(host_A.begin(), host_A.end(), [&]()->float{ return dis(gen); });
     std::generate(host_B.begin(), host_B.end(), [&]()->float{ return dis(gen); });
 
-    std::ostream_iterator<float> out_iter(std::cout, " ");
-    //copy(host_A.cbegin(), host_A.cend(), out_iter);
-    //copy(host_B.cbegin(), host_B.cend(), out_iter);
-
     sycl::buffer<float, 2> buffer_A(host_A.data(), sycl::range(m, k));
     sycl::buffer<float, 2> buffer_B(host_B.data(), sycl::range(k, n));
     sycl::buffer<float, 2> buffer_C(host_C.data(), sycl::range(m, n));
@@ -52,30 +48,28 @@ int main(int argc,  char** argv){
     sycl::queue matmul_queue(cl::sycl::default_selector{});
     matmul_queue.submit(matmul_task);
     
-
-    std::ostream_iterator<float> out_iter(std::cout, " ");
     
     struct cout_class_func{
         const char* str;
 	int index=0;
 	int width=0;
         cout_class_func(const char* s, int width):str(s), width(width){
-	    std::cout<<std::string(s)<<end::endl;
+             std::cout<<"TOP:"<<std::string(str);
 	}
-        void operator () (int i){
-	    if(index%width==0) std::cout<<endl;
+        void operator () (float i){
+	    if(index%width==0) std::cout<<std::endl;
             std::cout<<i<<" ";
             index++;
         }
 	~cout_class_func(){
-	    std::cout<<std::string(s)<<end::endl;
+	    std::cout<<std::endl;
 	}
     };
     
     
-    for_each(host_A.cbegin(),host_A.cend(), cout_class_func("Matrix A", k));
-    for_each(host_B.cbegin(),host_B.cend(), cout_class_func("Matrix B", n));
-    for_each(host_C.cbegin(),host_C.cend(), cout_class_func("Matrix C", n))
+    std::for_each(host_A.cbegin(),host_A.cend(), cout_class_func("Matrix A", k));
+    std::for_each(host_B.cbegin(),host_B.cend(), cout_class_func("Matrix B", n));
+    std::for_each(host_C.cbegin(),host_C.cend(), cout_class_func("Matrix C", n));
 
     return 0;
     double alpha = 1.0;
