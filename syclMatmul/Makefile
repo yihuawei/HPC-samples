@@ -1,5 +1,5 @@
 CC = dpcpp
-FLAGS = -std=c++2a
+FLAGS = -std=c++17  -O2
 OBJ = run_matmul
 SOURCES = matmul.cpp
 
